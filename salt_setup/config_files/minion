@@ -1,0 +1,6 @@
+##### Primary configuration settings #####
+##########################################
+
+default_include: minion.d/*.conf
+
+master: raspberrypi01
