@@ -1,0 +1,6 @@
+##### Primary configuration settings #####
+##########################################
+
+default_include: master.d/*.conf
+
+interface: 0.0.0.0

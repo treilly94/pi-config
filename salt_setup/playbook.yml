@@ -1,0 +1,56 @@
+# From
+# https://docs.saltstack.com/en/latest/topics/installation/debian.html
+
+---
+- hosts: all
+  become: true
+  tasks:
+  - name: Add jessie-backports and stretch repositories
+    apt_repository:
+      repo: deb http://archive.raspbian.org/raspbian/ stretch main
+      state: present
+  - name: Install dependencies
+    package:
+      name:
+        - python-zmq
+        - python-tornado
+        - salt-common
+      state: latest
+
+- hosts: masters
+  become: true
+  handlers:
+    - name: restart master
+      service:
+        name: salt-master
+        state: restarted
+        enabled: true
+  tasks:
+  - name: Install salt master
+    package:
+      name: salt-master
+      state: latest
+  - name: Copy master config
+    copy:
+      src: config_files/master
+      dest: /etc/salt/master
+    notify: restart master
+  
+- hosts: minions
+  become: true
+  handlers:
+    - name: restart minion
+      service:
+        name: salt-minion
+        state: restarted
+        enabled: true
+  tasks:
+  - name: Install salt minion
+    package:
+      name: salt-minion
+      state: latest
+  - name: Copy minion config
+    copy:
+      src: config_files/minion
+      dest: /etc/salt/minion
+    notify: restart minion
