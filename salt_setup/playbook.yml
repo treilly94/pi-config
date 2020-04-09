@@ -15,10 +15,14 @@
         - python-zmq
         - python-tornado
         - salt-common
+        - git
       state: latest
 
 - hosts: masters
   become: true
+  vars:
+    remote_deploykey_directory: /var/lib/salt/deploykey
+    local_deploykey_directory: ../deploykeys
   handlers:
     - name: restart master
       service:
@@ -26,6 +30,7 @@
         state: restarted
         enabled: true
   tasks:
+  # Salt
   - name: Install salt master
     package:
       name: salt-master
@@ -35,7 +40,35 @@
       src: config_files/master
       dest: /etc/salt/master
     notify: restart master
-  
+  # GitFS
+  - name: Install gitfs dependencies
+    package:
+      name: python-pygit2
+      state: latest
+  - name: Add github to known hosts
+    copy:
+      content: "github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ=="
+      dest: /etc/ssh/ssh_known_hosts
+  - name: Create root key directory
+    file:
+      path: "{{ remote_deploykey_directory }}"
+      state: directory
+  - name: Generate deploy key
+    openssh_keypair:
+      path: "{{ remote_deploykey_directory }}/id_rsa"
+      owner: salt
+    register: keypair
+  - name: Create pubkey directory
+    file:
+      path: "{{ local_deploykey_directory }}"
+      state: directory
+    delegate_to: 127.0.0.1
+  - name: Write pubkey
+    copy:
+      content: "{{ keypair.public_key }}"
+      dest: "{{ local_deploykey_directory }}/{{ inventory_hostname }}.pub"
+    delegate_to: 127.0.0.1
+
 - hosts: minions
   become: true
   handlers:
