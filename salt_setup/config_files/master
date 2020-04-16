@@ -10,3 +10,5 @@ fileserver_backend:
 
 gitfs_remotes:
   - https://github.com/treilly94/pi-config.git
+
+gitfs_root: saltfiles
