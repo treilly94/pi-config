@@ -9,6 +9,4 @@ fileserver_backend:
   - gitfs
 
 gitfs_remotes:
-  - git@github.com:treilly94/pi-config.git:
-    - pubkey: /var/lib/salt/deploykey/id_rsa.pub
-    - privkey: /var/lib/salt/deploykey/id_rsa
+  - https://github.com/treilly94/pi-config.git
