@@ -15,6 +15,7 @@
         - python-zmq
         - python-tornado
         - salt-common
+        - git
       state: latest
 
 - hosts: masters
@@ -35,7 +36,7 @@
       src: config_files/master
       dest: /etc/salt/master
     notify: restart master
-  
+
 - hosts: minions
   become: true
   handlers:
