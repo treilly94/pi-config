@@ -1,4 +1,4 @@
-##### Primary configuration settings #####
+##### Primary configuration settings  #####
 ##########################################
 
 default_include: minion.d/*.conf
