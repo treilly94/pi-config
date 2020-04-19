@@ -1,0 +1,23 @@
+Vagrant.configure("2") do |config|
+
+    config.vm.synced_folder "..", "/vagrant", type: "rsync"
+
+    config.vm.box = "debian/stretch64" # They're actually running Raspbian (buster)
+    config.vm.network "private_network", ip: "10.10.10.10"
+    
+    # Change the hostname to the name of the Pi you want to replicate
+    config.vm.hostname = "default" 
+
+    config.vm.provider "virtualbox" do |vb|
+        vb.name = "SaltTest"
+        vb.cpus = 2
+        vb.memory = 3092
+    end
+
+    config.vm.provision :salt do |salt|
+        salt.masterless = true
+        salt.minion_config = "minion"
+        salt.run_highstate = true
+    end
+
+end
