@@ -12,7 +12,9 @@ install_influxdb:
 
 influxdb:
   service.running:
-    - enable: True 
+    - enable: True
+    - watch:
+      file: /etc/influxdb/influxdb.conf
 
 
     
