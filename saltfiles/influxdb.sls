@@ -10,6 +10,9 @@ install_influxdb:
     - pkgs:
       - influxdb
 
+influxdb:
+  service.running:
+    - enable: True 
 
 
     
