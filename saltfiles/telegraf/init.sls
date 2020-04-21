@@ -1,5 +1,4 @@
 ---
-
 telegraf:
   pkgrepo.managed:
     - name: deb https://repos.influxdata.com/debian {{ grains['oscodename'] }} stable
@@ -9,7 +8,17 @@ telegraf:
   pkg.latest:
     - refresh: True
   
+  file.managed:
+    - name: /etc/telegraf/telegraf.conf
+    - source:
+      - salt://telegraf/telegraf.conf
+    - user: root
+    - group: root
+    - mode: 0644
+    - makedirs: True
+
   service.running:
     - enable: True
-    - require:
+    - watch:
+      - file: /etc/telegraf/*
       - pkg: telegraf
